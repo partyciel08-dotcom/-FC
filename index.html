@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>영상통화</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: white;
+  font-family: sans-serif;
+}
+
+.call-ui {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 상단 */
+.top {
+  position: absolute;
+  top: 30px;
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* 타이머 */
+.timer {
+  position: absolute;
+  top: 60px;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* 하단 버튼 */
+.bottom {
+  position: absolute;
+  bottom: 50px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* 종료 버튼 */
+.end-btn {
+  width: 70px;
+  height: 70px;
+  background: red;
+  border-radius: 50%;
+  border: none;
+  font-size: 16px;
+  color: white;
+}
+
+/* 종료 화면 */
+.end-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+/* 참여 버튼 */
+.form-btn {
+  margin-top: 20px;
+  padding: 12px 25px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  background: #00c73c;
+  color: white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="call-ui">
+
+  <div class="top" id="name">연결중...</div>
+  <div class="timer" id="timer">00:00</div>
+
+  <video id="video" playsinline></video>
+
+  <div class="bottom">
+    <button class="end-btn" onclick="endCall()">종료</button>
+  </div>
+
+</div>
+
+<script>
+// 👉 네이버 폼 링크
+const formLink = "https://naver.me/G8fZCBl4";
+
+// 👉 영상 리스트
+const videos = [
+  { src: "영상주소1.mp4", name: "조빈" },
+  { src: "영상주소2.mp4", name: "선수2" }
+];
+
+// 랜덤 선택
+const random = videos[Math.floor(Math.random() * videos.length)];
+
+const video = document.getElementById("video");
+const nameEl = document.getElementById("name");
+
+video.src = random.src;
+
+// 타이머
+let sec = 0;
+let timerStarted = false;
+
+function startTimer(){
+  if(timerStarted) return;
+  timerStarted = true;
+
+  setInterval(() => {
+    sec++;
+    let m = String(Math.floor(sec / 60)).padStart(2, '0');
+    let s = String(sec % 60).padStart(2, '0');
+    document.getElementById("timer").innerText = `${m}:${s}`;
+  }, 1000);
+}
+
+// 영상 시작
+video.addEventListener("click", () => {
+  video.play();
+
+  setTimeout(() => {
+    nameEl.innerText = random.name + " (영상통화 중)";
+  }, 1500);
+
+  startTimer();
+});
+
+// 👉 종료 화면 보여주기
+function showEndScreen(){
+  document.body.innerHTML = `
+    <div class="end-screen">
+      <h2>통화가 종료되었습니다</h2>
+      <p>지금 바로 이벤트에 참여해보세요!</p>
+      <button class="form-btn" onclick="goForm()">이벤트 참여하기</button>
+    </div>
+  `;
+}
+
+// 👉 폼 이동
+function goForm(){
+  window.location.href = formLink;
+}
+
+// 영상 끝났을 때
+video.onended = () => {
+  showEndScreen();
+};
+
+// 종료 버튼 눌렀을 때
+function endCall(){
+  showEndScreen();
+}
+</script>
+
+</body>
+</html>
