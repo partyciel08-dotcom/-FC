@@ -36,6 +36,16 @@ body {
   color: white;
 }
 
+.decline-btn {
+  margin-top: 10px;
+  padding: 15px 30px;
+  font-size: 16px;
+  background: red;
+  border: none;
+  border-radius: 50px;
+  color: white;
+}
+
 /* 🎥 통화 화면 */
 .call-ui {
   position: relative;
@@ -93,15 +103,16 @@ video {
 
 <!-- 📞 수신 화면 -->
 <div class="start-screen" id="startScreen">
-  <h2>📞 영상통화가 걸려왔습니다</h2>
+  <h2 id="callerText">📞 영상통화가 걸려왔습니다</h2>
   <button class="accept-btn" onclick="startCall()">받기</button>
+  <button class="decline-btn" onclick="endCall()">거절</button>
 </div>
 
 <!-- 🎥 통화 화면 -->
 <div class="call-ui" id="callUI">
   <div class="top" id="name">연결중...</div>
   <div class="timer" id="timer">00:00</div>
-  <video id="video" playsinline></video>
+  <video id="video" playsinline muted></video>
 
   <div class="bottom">
     <button class="end-btn" onclick="endCall()">종료</button>
@@ -112,7 +123,7 @@ video {
 // 👉 네이버 폼 링크
 const formLink = "https://naver.me/G8fZCBl4";
 
-// 👉 영상 리스트 (4명 랜덤)
+// 👉 영상 리스트 (여기 추가하면 됨)
 const videos = [
   { src: "영상주소0.mp4", name: "선수1" },
   { src: "영상주소1.mp4", name: "조빈" },
@@ -120,13 +131,20 @@ const videos = [
   { src: "영상주소3.mp4", name: "선수3" }
 ];
 
-// 랜덤 선택
+// 🎲 랜덤 선택
 const random = videos[Math.floor(Math.random() * videos.length)];
 
 const video = document.getElementById("video");
 const nameEl = document.getElementById("name");
 
+// 👉 영상 미리 준비 (무음 상태)
 video.src = random.src;
+video.load();
+video.muted = true;
+
+// 👉 수신 화면에 발신자 표시
+document.getElementById("callerText").innerText =
+  "📞 " + random.name + "에게서 영상통화가 왔습니다";
 
 // ⏱️ 타이머
 let sec = 0;
@@ -144,25 +162,42 @@ function startTimer(){
   }, 1000);
 }
 
+// 📳 진동 효과
+function vibrate(){
+  if(navigator.vibrate){
+    navigator.vibrate([300, 200, 300]);
+  }
+}
+
 // 📞 통화 시작
 function startCall(){
+  vibrate();
+
   document.getElementById("startScreen").style.display = "none";
   document.getElementById("callUI").style.display = "block";
 
-  video.muted = false;
-  video.play();
+  nameEl.innerText = "연결중...";
 
-  nameEl.innerText = random.name + " (영상통화 중)";
+  // 👉 연결 딜레이 (현실감)
+  setTimeout(() => {
+    video.muted = false;
+    video.currentTime = 0;
 
-  startTimer();
+    video.play().catch(err => {
+      console.log("재생 오류:", err);
+    });
 
-  // 👉 30초 후 자동 종료
+    nameEl.innerText = random.name + " (영상통화 중)";
+    startTimer();
+  }, 2000);
+
+  // 👉 자동 종료
   setTimeout(() => {
     goForm();
-  }, 30000);
+  }, 32000);
 }
 
-// ❌ 종료 버튼
+// ❌ 종료
 function endCall(){
   goForm();
 }
