@@ -13,7 +13,7 @@ body {
   font-family: sans-serif;
 }
 
-/* 📞 전화 수신 화면 */
+/* 📞 수신 화면 */
 .start-screen {
   position: fixed;
   top: 0; left: 0;
@@ -31,16 +31,6 @@ body {
   padding: 15px 30px;
   font-size: 18px;
   background: green;
-  border: none;
-  border-radius: 50px;
-  color: white;
-}
-
-.decline-btn {
-  margin-top: 10px;
-  padding: 15px 30px;
-  font-size: 16px;
-  background: red;
   border: none;
   border-radius: 50px;
   color: white;
@@ -105,14 +95,15 @@ video {
 <div class="start-screen" id="startScreen">
   <h2 id="callerText">📞 영상통화가 걸려왔습니다</h2>
   <button class="accept-btn" onclick="startCall()">받기</button>
-  <button class="decline-btn" onclick="endCall()">거절</button>
 </div>
 
 <!-- 🎥 통화 화면 -->
 <div class="call-ui" id="callUI">
   <div class="top" id="name">연결중...</div>
   <div class="timer" id="timer">00:00</div>
-  <video id="video" playsinline muted></video>
+
+  <!-- 🔥 autoplay + muted 필수 -->
+  <video id="video" playsinline autoplay muted></video>
 
   <div class="bottom">
     <button class="end-btn" onclick="endCall()">종료</button>
@@ -123,12 +114,16 @@ video {
 // 👉 네이버 폼 링크
 const formLink = "https://naver.me/G8fZCBl4";
 
-// 👉 영상 리스트 (여기 추가하면 됨)
+// 👉 영상 리스트 (🔥 Cloudinary 옵션 적용)
 const videos = [
-  { src: "영상주소0.mp4", name: "선수1" },
-  { src: "영상주소1.mp4", name: "조빈" },
-  { src: "영상주소2.mp4", name: "선수2" },
-  { src: "영상주소3.mp4", name: "선수3" }
+  {
+    src: "영상링크.mp4",
+    name: "선수1"
+  },
+  {
+    src: "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1775576262/KakaoTalk_20260408_003600383_cosbro.mp4",
+    name: "조빈"
+  }
 ];
 
 // 🎲 랜덤 선택
@@ -137,12 +132,7 @@ const random = videos[Math.floor(Math.random() * videos.length)];
 const video = document.getElementById("video");
 const nameEl = document.getElementById("name");
 
-// 👉 영상 미리 준비 (무음 상태)
-video.src = random.src;
-video.load();
-video.muted = true;
-
-// 👉 수신 화면에 발신자 표시
+// 👉 발신자 표시
 document.getElementById("callerText").innerText =
   "📞 " + random.name + "에게서 영상통화가 왔습니다";
 
@@ -162,45 +152,41 @@ function startTimer(){
   }, 1000);
 }
 
-// 📳 진동 효과
-function vibrate(){
-  if(navigator.vibrate){
-    navigator.vibrate([300, 200, 300]);
-  }
-}
-
 // 📞 통화 시작
 function startCall(){
-  vibrate();
-
   document.getElementById("startScreen").style.display = "none";
   document.getElementById("callUI").style.display = "block";
 
   nameEl.innerText = "연결중...";
 
-  // 👉 연결 딜레이 (현실감)
+  // 🔥 여기서 영상 로드 (핵심)
+  video.src = random.src;
+  video.load();
+
   setTimeout(() => {
-    video.muted = false;
     video.currentTime = 0;
 
-    video.play().catch(err => {
+    // 🔥 영상 재생 (소리 포함)
+    video.play().then(() => {
+      video.muted = false;
+    }).catch(err => {
       console.log("재생 오류:", err);
     });
 
     nameEl.innerText = random.name + " (영상통화 중)";
     startTimer();
   }, 2000);
-
-  // 👉 자동 종료
-  setTimeout(() => {
-    goForm();
-  }, 32000);
 }
 
 // ❌ 종료
 function endCall(){
   goForm();
 }
+
+// 🔥 영상 끝나면 자동 이동 (핵심)
+video.addEventListener("ended", () => {
+  goForm();
+});
 
 // 👉 폼 이동
 function goForm(){
