@@ -3,195 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>영상통화</title>
+<title>랜덤 영상</title>
 
 <style>
 body {
   margin: 0;
   background: black;
-  color: white;
   font-family: sans-serif;
 }
 
-/* 📞 수신 화면 */
+/* 🎬 시작 화면 */
 .start-screen {
   position: fixed;
   top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 999;
-}
-
-.accept-btn {
-  margin-top: 20px;
-  padding: 15px 30px;
-  font-size: 18px;
-  background: green;
-  border: none;
-  border-radius: 50px;
-  color: white;
-}
-
-/* 🎥 통화 화면 */
-.call-ui {
-  position: relative;
+  width: 100%;
   height: 100vh;
-  display: none;
 }
 
-video {
+.start-screen img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-/* 상단 */
-.top {
+/* ▶️ 시작 버튼 */
+.start-btn {
   position: absolute;
-  top: 30px;
-  width: 100%;
-  text-align: center;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 15px 30px;
   font-size: 18px;
-  font-weight: bold;
-}
-
-/* 타이머 */
-.timer {
-  position: absolute;
-  top: 60px;
-  width: 100%;
-  text-align: center;
-  font-size: 14px;
-}
-
-/* 하단 종료 버튼 */
-.bottom {
-  position: absolute;
-  bottom: 50px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.end-btn {
-  width: 70px;
-  height: 70px;
-  background: red;
-  border-radius: 50%;
   border: none;
+  border-radius: 50px;
+  background: red;
   color: white;
-  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 🎥 영상 */
+video {
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  display: none;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 📞 수신 화면 -->
+<!-- 🎬 썸네일 화면 -->
 <div class="start-screen" id="startScreen">
-  <h2 id="callerText">📞 영상통화가 걸려왔습니다</h2>
-  <button class="accept-btn" onclick="startCall()">받기</button>
+  <img src="https://via.placeholder.com/1080x1920?text=썸네일+이미지" alt="썸네일">
+  <button class="start-btn" onclick="startVideo()">시작하기</button>
 </div>
 
-<!-- 🎥 통화 화면 -->
-<div class="call-ui" id="callUI">
-  <div class="top" id="name">연결중...</div>
-  <div class="timer" id="timer">00:00</div>
-
-  <!-- 🔥 autoplay + muted 필수 -->
-  <video id="video" playsinline autoplay muted></video>
-
-  <div class="bottom">
-    <button class="end-btn" onclick="endCall()">종료</button>
-  </div>
-</div>
+<!-- 🎥 영상 -->
+<video id="video" playsinline></video>
 
 <script>
 // 👉 네이버 폼 링크
 const formLink = "https://naver.me/G8fZCBl4";
 
-// 👉 영상 리스트 (🔥 Cloudinary 옵션 적용)
+// 👉 영상 리스트
 const videos = [
-  {
-    src: "영상링크.mp4",
-    name: "선수1"
-  },
-  {
-    src: "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1775576262/KakaoTalk_20260408_003600383_cosbro.mp4",
-    name: "조빈"
-  }
+  "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776135608/%ED%9D%AC%EC%88%98%EC%84%A0%EC%88%982_pa1wfd.mp4",
+  "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1775576262/KakaoTalk_20260408_003600383_cosbro.mp4"
 ];
 
-// 🎲 랜덤 선택
-const random = videos[Math.floor(Math.random() * videos.length)];
-
 const video = document.getElementById("video");
-const nameEl = document.getElementById("name");
 
-// 👉 발신자 표시
-document.getElementById("callerText").innerText =
-  "📞 " + random.name + "에게서 영상통화가 왔습니다";
+// 🎲 랜덤 선택
+const randomVideo = videos[Math.floor(Math.random() * videos.length)];
 
-// ⏱️ 타이머
-let sec = 0;
-let timerStarted = false;
-
-function startTimer(){
-  if(timerStarted) return;
-  timerStarted = true;
-
-  setInterval(() => {
-    sec++;
-    let m = String(Math.floor(sec / 60)).padStart(2, '0');
-    let s = String(sec % 60).padStart(2, '0');
-    document.getElementById("timer").innerText = `${m}:${s}`;
-  }, 1000);
-}
-
-// 📞 통화 시작
-function startCall(){
+// ▶️ 시작 버튼 클릭
+function startVideo(){
   document.getElementById("startScreen").style.display = "none";
-  document.getElementById("callUI").style.display = "block";
+  video.style.display = "block";
 
-  nameEl.innerText = "연결중...";
+  video.src = randomVideo;
 
-  // 🔥 여기서 영상 로드 (핵심)
-  video.src = random.src;
-  video.load();
-
-  setTimeout(() => {
-    video.currentTime = 0;
-
-    // 🔥 영상 재생 (소리 포함)
-    video.play().then(() => {
-      video.muted = false;
-    }).catch(err => {
-      console.log("재생 오류:", err);
-    });
-
-    nameEl.innerText = random.name + " (영상통화 중)";
-    startTimer();
-  }, 2000);
+  // 🔥 클릭 기반이라 소리 재생 가능
+  video.play().catch(() => {
+    video.muted = true;
+    video.play();
+  });
 }
 
-// ❌ 종료
-function endCall(){
-  goForm();
-}
-
-// 🔥 영상 끝나면 자동 이동 (핵심)
+// 🔥 영상 끝나면 폼 이동
 video.addEventListener("ended", () => {
-  goForm();
-});
-
-// 👉 폼 이동
-function goForm(){
   window.location.href = formLink;
-}
+});
 </script>
 
 </body>
