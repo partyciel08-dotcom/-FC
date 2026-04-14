@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -56,7 +56,7 @@ video {
 <!-- 🎬 썸네일 화면 -->
 <div class="start-screen" id="startScreen">
   <img src="https://via.placeholder.com/1080x1920?text=썸네일+이미지" alt="썸네일">
-  <button class="start-btn" onclick="startVideo()">시작하기</button>
+  <button class="start-btn" onclick="startVideo()">영상통화 하러가기</button>
 </div>
 
 <!-- 🎥 영상 -->
@@ -66,10 +66,15 @@ video {
 // 👉 네이버 폼 링크
 const formLink = "https://naver.me/G8fZCBl4";
 
-// 👉 영상 리스트
+// 👉 영상 리스트 (여기에 계속 추가하면 됨)
 const videos = [
   "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776135608/%ED%9D%AC%EC%88%98%EC%84%A0%EC%88%982_pa1wfd.mp4",
-  "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1775576262/KakaoTalk_20260408_003600383_cosbro.mp4"
+  "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1775576262/KakaoTalk_20260408_003600383_cosbro.mp4",
+
+  // 🔽👇 여기부터 영상 추가하면 됨
+  "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776135734/%EC%B0%BD%EB%AC%B4%EC%84%A0%EC%88%982_iwko3j.mp4",
+  "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776135772/%EC%A7%80%ED%9B%88%EC%84%A0%EC%88%982_mvmfwi.mp4",
+  "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776135809/%EA%B2%BD%EB%AF%BC%EC%84%A0%EC%88%982_bebifq.mp4"
 ];
 
 const video = document.getElementById("video");
@@ -84,7 +89,6 @@ function startVideo(){
 
   video.src = randomVideo;
 
-  // 🔥 클릭 기반이라 소리 재생 가능
   video.play().catch(() => {
     video.muted = true;
     video.play();
@@ -96,6 +100,6 @@ video.addEventListener("ended", () => {
   window.location.href = formLink;
 });
 </script>
-
+  
 </body>
 </html>
