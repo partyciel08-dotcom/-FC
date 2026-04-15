@@ -1,9 +1,9 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>랜덤 영상</title>
+<title>랜덤 영상통화</title>
 
 <style>
 body {
@@ -18,22 +18,15 @@ body {
   top: 0; left: 0;
   width: 100%;
   height: 100vh;
-}
-
-.start-screen img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* ▶️ 시작 버튼 */
 .start-btn {
-  position: absolute;
-  bottom: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 15px 30px;
-  font-size: 18px;
+  padding: 18px 36px;
+  font-size: 20px;
   border: none;
   border-radius: 50px;
   background: red;
@@ -48,44 +41,65 @@ video {
   object-fit: cover;
   display: none;
 }
+
+/* 🔴 종료 버튼 */
+.end-btn {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: none;
+  background: red;
+  color: white;
+  font-size: 14px;
+  display: none;
+}
 </style>
 </head>
 
 <body>
 
-<!-- 🎬 썸네일 화면 -->
+<!-- 🎬 시작 화면 -->
 <div class="start-screen" id="startScreen">
-  <img src="https://via.placeholder.com/1080x1920?text=썸네일+이미지" alt="썸네일">
   <button class="start-btn" onclick="startVideo()">영상통화 하러가기</button>
 </div>
 
 <!-- 🎥 영상 -->
 <video id="video" playsinline></video>
 
+<!-- 🔴 끊기 버튼 -->
+<button class="end-btn" id="endBtn" onclick="endCall()">끊기</button>
+
 <script>
 // 👉 네이버 폼 링크
 const formLink = "https://naver.me/G8fZCBl4";
 
-// 👉 영상 리스트 (여기에 계속 추가하면 됨)
+// 👉 영상 리스트 (여기에 계속 추가 가능)
 const videos = [
   "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776263765/%EA%B0%95%ED%9D%AC%EC%88%98%EC%84%A0%EC%88%98_o6f2f6.mp4",
   "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776263785/%EA%B9%80%EA%B2%BD%EB%AF%BC%EC%84%A0%EC%88%98_x953oq.mp4",
-
-  // 🔽👇 여기부터 영상 추가하면 됨
   "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776263802/%EC%8B%A0%EC%B0%BD%EB%AC%B4%EC%84%A0%EC%88%98_xvabhs.mp4",
   "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776263819/%EC%A0%95%EC%A7%80%ED%9B%88%EC%84%A0%EC%88%98_njviea.mp4",
   "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776263848/%EC%A1%B0%EB%B9%88_dd9b2l.mp4"
+
+  // 👉 추가할 때는 아래처럼
+  // ,"영상링크"
 ];
 
 const video = document.getElementById("video");
+const endBtn = document.getElementById("endBtn");
 
-// 🎲 랜덤 선택
+// 🎲 랜덤 영상 선택
 const randomVideo = videos[Math.floor(Math.random() * videos.length)];
 
-// ▶️ 시작 버튼 클릭
+// ▶️ 영상 시작
 function startVideo(){
   document.getElementById("startScreen").style.display = "none";
   video.style.display = "block";
+  endBtn.style.display = "block";
 
   video.src = randomVideo;
 
@@ -95,11 +109,16 @@ function startVideo(){
   });
 }
 
-// 🔥 영상 끝나면 폼 이동
+// 🔴 통화 종료 → 폼 이동
+function endCall(){
+  window.location.href = formLink;
+}
+
+// 🎬 영상 끝나면 자동 이동
 video.addEventListener("ended", () => {
   window.location.href = formLink;
 });
 </script>
-  
+
 </body>
 </html>
