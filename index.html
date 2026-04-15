@@ -20,7 +20,8 @@ body {
   height: 100vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end; /* 👈 아래쪽으로 */
+  padding-bottom: 120px;
 }
 
 /* ▶️ 시작 버튼 */
@@ -42,7 +43,7 @@ video {
   display: none;
 }
 
-/* 🔴 종료 버튼 */
+/* 🔴 전화 종료 버튼 */
 .end-btn {
   position: absolute;
   bottom: 60px;
@@ -52,10 +53,17 @@ video {
   height: 80px;
   border-radius: 50%;
   border: none;
-  background: red;
-  color: white;
-  font-size: 14px;
+  background: #ff3b30;
   display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 📞 아이콘 */
+.end-btn::before {
+  content: "📞";
+  font-size: 30px;
+  transform: rotate(135deg); /* 전화 끊기 느낌 */
 }
 </style>
 </head>
@@ -70,36 +78,32 @@ video {
 <!-- 🎥 영상 -->
 <video id="video" playsinline></video>
 
-<!-- 🔴 끊기 버튼 -->
-<button class="end-btn" id="endBtn" onclick="endCall()">끊기</button>
+<!-- 🔴 종료 버튼 -->
+<button class="end-btn" id="endBtn" onclick="endCall()"></button>
 
 <script>
 // 👉 네이버 폼 링크
 const formLink = "https://naver.me/G8fZCBl4";
 
-// 👉 영상 리스트 (여기에 계속 추가 가능)
+// 👉 영상 리스트
 const videos = [
   "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776263765/%EA%B0%95%ED%9D%AC%EC%88%98%EC%84%A0%EC%88%98_o6f2f6.mp4",
   "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776263785/%EA%B9%80%EA%B2%BD%EB%AF%BC%EC%84%A0%EC%88%98_x953oq.mp4",
   "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776263802/%EC%8B%A0%EC%B0%BD%EB%AC%B4%EC%84%A0%EC%88%98_xvabhs.mp4",
   "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776263819/%EC%A0%95%EC%A7%80%ED%9B%88%EC%84%A0%EC%88%98_njviea.mp4",
   "https://res.cloudinary.com/dkxltupng/video/upload/f_mp4,q_auto/v1776263848/%EC%A1%B0%EB%B9%88_dd9b2l.mp4"
-
-  // 👉 추가할 때는 아래처럼
-  // ,"영상링크"
 ];
 
 const video = document.getElementById("video");
 const endBtn = document.getElementById("endBtn");
 
-// 🎲 랜덤 영상 선택
+// 🎲 랜덤 선택
 const randomVideo = videos[Math.floor(Math.random() * videos.length)];
 
-// ▶️ 영상 시작
+// ▶️ 시작
 function startVideo(){
   document.getElementById("startScreen").style.display = "none";
   video.style.display = "block";
-  endBtn.style.display = "block";
 
   video.src = randomVideo;
 
@@ -107,14 +111,19 @@ function startVideo(){
     video.muted = true;
     video.play();
   });
+
+  // ⏱️ 4초 뒤 종료 버튼 등장
+  setTimeout(() => {
+    endBtn.style.display = "flex";
+  }, 4000);
 }
 
-// 🔴 통화 종료 → 폼 이동
+// 🔴 통화 종료
 function endCall(){
   window.location.href = formLink;
 }
 
-// 🎬 영상 끝나면 자동 이동
+// 🎬 영상 끝나면 이동
 video.addEventListener("ended", () => {
   window.location.href = formLink;
 });
